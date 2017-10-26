@@ -2,9 +2,6 @@ package com.cs6650.assignment2.client;
 
 import org.json.simple.parser.ParseException;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;

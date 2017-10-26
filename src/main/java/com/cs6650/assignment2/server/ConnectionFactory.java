@@ -2,19 +2,8 @@ package com.cs6650.assignment2.server;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
-import org.postgresql.ds.PGPoolingDataSource;
-
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Hashtable;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 
 /**
  * Created by saikikwok on 22/10/2017.

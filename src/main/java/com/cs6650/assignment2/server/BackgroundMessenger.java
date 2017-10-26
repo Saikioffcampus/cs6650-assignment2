@@ -2,7 +2,6 @@ package com.cs6650.assignment2.server;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import bsdsass2testdata.RFIDLiftData;
 
