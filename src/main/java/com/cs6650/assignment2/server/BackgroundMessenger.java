@@ -8,11 +8,9 @@ import bsdsass2testdata.RFIDLiftData;
 /**
  * Created by saikikwok on 23/10/2017.
  */
-public class BackgroundMessenger extends Thread{
+public class BackgroundMessenger extends MessengerThread{
 
-    private static final long INTERVAL = 1000;
-    private static final int BATCH_SIZE = 20;
-    private Boolean isActive = true;
+    protected final int BATCH_SIZE = 20;
 
     public void run() {
         while (this.isActive) {
@@ -22,17 +20,16 @@ public class BackgroundMessenger extends Thread{
                 try {
                     dao.insertRecord(dataset);
                     Thread.sleep(100);
-                } catch (SQLException e) {
-                    e.printStackTrace();
                 } catch (InterruptedException e) {
+                    BackgroundMessengerManager
+                            .sqsMessageQueue
+                            .offer("hostname: " + BackgroundMessengerManager.hostname +
+                                    "; start_time: " + System.currentTimeMillis() +
+                                    "; failed: " + e.toString());
                     e.printStackTrace();
                 }
             }
         }
-    }
-
-    public void setDone() {
-        this.isActive = false;
     }
 
     private LinkedList<RFIDLiftData> gatherDataSet() {
@@ -46,6 +43,11 @@ public class BackgroundMessenger extends Thread{
                     Thread.sleep(INTERVAL);
                     continue;
                 } catch (InterruptedException e) {
+                    BackgroundMessengerManager
+                            .sqsMessageQueue
+                            .offer("hostname: " + BackgroundMessengerManager.hostname +
+                                    "; start_time: " + System.currentTimeMillis() +
+                                    "; failed: " + e.toString());
                     e.printStackTrace();
                 }
             }

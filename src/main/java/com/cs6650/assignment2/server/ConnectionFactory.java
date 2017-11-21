@@ -10,7 +10,8 @@ import java.sql.SQLException;
  */
 public class ConnectionFactory {
 
-    private static final String URL = "";
+    private static final String URL =
+            "jdbc:postgresql://cs6650.c5yqzec6hhrx.us-west-2.rds.amazonaws.com/assignment2";
     private static final String USER = "";
     private static final String PASS = "";
     private static DataSource DATA_SOURCE;

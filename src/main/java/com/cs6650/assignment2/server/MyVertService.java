@@ -18,8 +18,15 @@ public class MyVertService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response myvert(@QueryParam("skierID") int skierID, @QueryParam("dayNum") int dayNum) throws Exception {
+        Long start = System.currentTimeMillis();
         RecordDAO dao = new RecordDAO();
         JSONObject ret = dao.getSkierDataBySkierIDAndDayNum(skierID, dayNum);
+        Long response_time = System.currentTimeMillis() - start;
+        BackgroundMessengerManager
+                .sqsMessageQueue
+                .offer("hostname: " + BackgroundMessengerManager.hostname +
+                        "; method_type: get; start_time: " + start +
+                        "; response_time: " + response_time.toString());
         return Response.status(200).entity(ret.toString()).build();
     }
 }

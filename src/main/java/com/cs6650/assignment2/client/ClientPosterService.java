@@ -2,6 +2,7 @@ package com.cs6650.assignment2.client;
 
 import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
@@ -17,7 +18,8 @@ public class ClientPosterService {
     private final static int IP = 2;
     private final static int PORT = 3;
     private final static int DEFAULT_THREAD_NUM = 150;
-    private final static String DEFAULT_IP = "34.213.182.195";
+    private final static String DEFAULT_IP1 = "34.210.89.194";
+    private final static String DEFAULT_IP = "assignment4-8080-1328004352.us-west-2.elb.amazonaws.com";
     private final static String DEFAULT_PORT = "8080";
     private final static ConcurrentLinkedQueue<Long> latencies = new ConcurrentLinkedQueue<Long>();
 
@@ -32,7 +34,7 @@ public class ClientPosterService {
             ip = argv[IP];
             port = argv[PORT];
         }
-        String urlBase = "http://" + ip + ":" + port + "/cs6650-assignment2_war/rest/";
+        String urlBase = "http://" + ip + ":" + port + "/cs6650-assignment3f_war/rest/";
 //        String urlBase = "http://localhost:8080/rest/";
 
         ClientContentProducer producer = new ClientContentProducer();
@@ -48,6 +50,7 @@ public class ClientPosterService {
             long wallTime = System.currentTimeMillis() - startTime;
             System.out.println("——————————————————————————————");
             System.out.println("Wall time of client poster service: " + wallTime + " ms");
+            System.out.println("Throughput per second: " + 200000 / (wallTime / 1000));
             System.out.println("——————————————————————————————");
             double[] stats = Util.parseLatency(Util.queue2List(latencies));
             System.out.println("Mean latency for all requests: " + stats[Util.MEAN] + " ms");
@@ -55,6 +58,12 @@ public class ClientPosterService {
             System.out.println("P95 latency for all requests: " + stats[Util.P95] + " ms");
             System.out.println("P99 latency for all requests: " + stats[Util.P99] + " ms");
             System.out.println("——————————————————————————————");
+            ClientChartFactory clientChartFactory = new ClientChartFactory();
+            try {
+                clientChartFactory.getChart(latencies, "Latencies - Write.jpeg");
+            } catch (IOException ex) {
+                System.out.println("Failed in chart generation!");
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {

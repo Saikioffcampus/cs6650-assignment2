@@ -25,8 +25,15 @@ public class LoadService {
                        @QueryParam("skierID") int skierID,
                        @QueryParam("liftID") int liftID) throws Exception{
 
+        Long start = System.currentTimeMillis();
         RFIDLiftData data = new RFIDLiftData(resortID, dayNum, skierID, liftID, timestamp);
         BackgroundMessengerManager.messageQueue.offer(data);
+        Long response_time = System.currentTimeMillis() - start;
+        BackgroundMessengerManager
+                .sqsMessageQueue
+                .offer("hostname: " + BackgroundMessengerManager.hostname +
+                        "; method_type: post; start_time: " + start +
+                        "; response_time: " + response_time.toString());
         return "ok";
 
     }

@@ -54,7 +54,12 @@ public class ClientGetter implements Runnable {
                         .request()
                         .accept(MediaType.APPLICATION_JSON)
                         .get();
-                JSONObject obj = (JSONObject) new JSONParser().parse(r.readEntity(String.class));
+//                System.out.println(skierId);
+                try {
+                    JSONObject obj = (JSONObject) new JSONParser().parse(r.readEntity(String.class));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 r.close();
                 long latency = System.currentTimeMillis() - start;
                 this.latencies.offer(latency);
@@ -64,8 +69,6 @@ public class ClientGetter implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (BrokenBarrierException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
             e.printStackTrace();
         }
     }

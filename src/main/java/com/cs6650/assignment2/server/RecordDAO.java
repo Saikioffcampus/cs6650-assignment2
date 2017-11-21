@@ -42,7 +42,7 @@ public class RecordDAO {
         return false;
     }
 
-    public Boolean insertRecord(LinkedList<RFIDLiftData> dataset) throws SQLException {
+    public Boolean insertRecord(LinkedList<RFIDLiftData> dataset) {
         Connection conn = null;
         try {
             conn = ConnectionFactory.getConnection();
@@ -57,10 +57,31 @@ public class RecordDAO {
                 ps.setInt(5, data.getLiftID());
                 ps.addBatch();
             }
+            Long start = System.currentTimeMillis();
             int[] updateCounts = ps.executeBatch();
             conn.commit();
+            Long queryTime = System.currentTimeMillis() - start;
+            BackgroundMessengerManager
+                    .sqsMessageQueue
+                    .offer("hostname: " + BackgroundMessengerManager.hostname +
+                            "; method_type: insert; start_time: " + start +
+                            "; query_time: " + queryTime);
+        } catch (SQLException e) {
+            BackgroundMessengerManager
+                    .sqsMessageQueue
+                    .offer("hostname: " + BackgroundMessengerManager.hostname +
+                            "; start_time: " + System.currentTimeMillis() +
+                            "; failed: " + e.toString());
         } finally {
-            if (conn != null) conn.close();
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                BackgroundMessengerManager
+                        .sqsMessageQueue
+                        .offer("hostname: " + BackgroundMessengerManager.hostname +
+                                "; start_time: " + System.currentTimeMillis() +
+                                "; failed: " + e.toString());
+            }
         }
         return true;
     }
@@ -75,14 +96,36 @@ public class RecordDAO {
                     "FROM info_day_" + dayNum + " WHERE skier_id = ?";
             PreparedStatement ps = conn.prepareStatement(retrieve_sql);
             ps.setInt(1, skierId);
-//            ps.setInt(2, dayNum);
+            Long start = System.currentTimeMillis();
             ResultSet resultSet = ps.executeQuery();
+            Long queryTime = System.currentTimeMillis() - start;
+            BackgroundMessengerManager
+                    .sqsMessageQueue
+                    .offer("hostname: " + BackgroundMessengerManager.hostname +
+                            "; method_type: select; start_time: " + start +
+                            "; query_time: " + queryTime);
             if (resultSet.next()) {
                 ret.put("num_lift", resultSet.getInt(1));
                 ret.put("total_vertical", resultSet.getInt(2));
             }
+        } catch (SQLException e) {
+            BackgroundMessengerManager
+                    .sqsMessageQueue
+                    .offer("hostname: " + BackgroundMessengerManager.hostname +
+                            "; start_time: " + System.currentTimeMillis() +
+                            "; failed: " + e.toString());
+            ret.put("num_lift", -1);
+            ret.put("total_vertical", -1);
         } finally {
-            if (conn != null) conn.close();
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                BackgroundMessengerManager
+                        .sqsMessageQueue
+                        .offer("hostname: " + BackgroundMessengerManager.hostname +
+                                "; start_time: " + System.currentTimeMillis() +
+                                "; failed: " + e.toString());
+            }
         }
         return ret;
     }

@@ -13,7 +13,7 @@ import bsdsass2testdata.RFIDLiftData;
  */
 public class ClientContentProducer {
     private ConcurrentLinkedQueue<RFIDLiftData> queue;
-    final private String contentSource = "resource/BSDSAssignment2Day2.ser";
+    final private String contentSource = "resource/BSDSAssignment2Day5.ser";
 
     public ClientContentProducer() {
         populate();
